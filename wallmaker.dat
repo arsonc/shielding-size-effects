@@ -1,0 +1,486 @@
+def wallmaker
+	r=0.8
+	wall_length=0.8
+	half_wall_length=wall_length/2
+
+	initialwallz=1.05*0.8;
+	w6z = initialwallz
+	w5z = -initialwallz
+	
+
+	shield_wall_length=0.2; position of shielding walls, length=0.2
+	half_shield_wall_length=shield_wall_length/2
+	
+	longitude=10
+
+	degree_1 = pi*15.0/180 ;degree that at the 15 degrees above the equator
+	degree_2 = pi*30.0/180 ;degree that at the 30 degrees above the equator
+	degree_3 = pi*45.0/180 ;degree that at the 45 degrees above the equator
+	degree_4 = pi*60.0/180 ;degree that is 60 degrees above equator
+
+	layer_type=3
+		; 0, 1 layer at equator
+		; 1, 3 layer at degree_1.
+		; 2, 5 layer at degree_1 and degree_2
+		; 3, 7 layers at degree_1 and degree_2 and degree_3
+		; 4, 9 layers yo 
+
+	
+	command ;generate the bottomwall and topwall
+		
+		wall id=1 kn=1e30 type disk rad half_wall_length norm  1  0  0 xc w5z yc 0 zc 0            ; The bottom wall
+		wall id=2 kn=1e30 type disk rad half_wall_length norm -1  0  0 xc w6z yc 0 zc 0           ; The top wall
+		table 1
+	end_command
+	
+	wall_id=3 ; starts from 3
+
+	loop m(1,longitude)
+		phi=2.0*pi/longitude*(m-1)
+
+		if layer_type=0
+
+			degree_mid=0
+			x_wall_mid=initialwallz*sin(degree_mid)
+			y_wall_mid=initialwallz*cos(degree_mid)*cos(phi)
+			z_wall_mid=initialwallz*cos(degree_mid)*sin(phi)
+			x_wall_mid_dv=-x_wall_mid
+			y_wall_mid_dv=-y_wall_mid
+			z_wall_mid_dv=-z_wall_mid
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_mid_dv  y_wall_mid_dv  z_wall_mid_dv xc x_wall_mid yc y_wall_mid zc z_wall_mid
+				table 1 degree_mid phi
+			end_command
+			wall_id=wall_id+1
+		end_if
+
+		if layer_type=1
+			
+			
+			degree_up=degree_1
+			x_wall_up=initialwallz*sin(degree_up)
+			y_wall_up=initialwallz*cos(degree_up)*cos(phi)
+			z_wall_up=initialwallz*cos(degree_up)*sin(phi)
+			x_wall_up_dv=-x_wall_up
+			y_wall_up_dv=-y_wall_up
+			z_wall_up_dv=-z_wall_up
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_up_dv  y_wall_up_dv  z_wall_up_dv xc x_wall_up yc y_wall_up zc z_wall_up
+				table 1 degree_up phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_mid=0
+			x_wall_mid=initialwallz*sin(degree_mid)
+			y_wall_mid=initialwallz*cos(degree_mid)*cos(phi)
+			z_wall_mid=initialwallz*cos(degree_mid)*sin(phi)
+			x_wall_mid_dv=-x_wall_mid
+			y_wall_mid_dv=-y_wall_mid
+			z_wall_mid_dv=-z_wall_mid
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_mid_dv  y_wall_mid_dv  z_wall_mid_dv xc x_wall_mid yc y_wall_mid zc z_wall_mid
+				table 1 degree_mid phi
+			end_command
+			wall_id=wall_id+1
+
+			degree_down=-degree_1
+			x_wall_down=initialwallz*sin(degree_down)
+			y_wall_down=initialwallz*cos(degree_down)*cos(phi)
+			z_wall_down=initialwallz*cos(degree_down)*sin(phi)
+			x_wall_down_dv=-x_wall_down
+			y_wall_down_dv=-y_wall_down
+			z_wall_down_dv=-z_wall_down
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_down_dv  y_wall_down_dv z_wall_down_dv xc x_wall_down yc y_wall_down zc z_wall_down
+				table 1 degree_down phi
+			end_command
+			wall_id=wall_id+1
+						
+		end_if
+
+		if layer_type=2
+
+			; walls count from up to bottom
+
+			degree_up_1=degree_2
+			x_wall_up_1=initialwallz*sin(degree_up_1)
+			y_wall_up_1=initialwallz*cos(degree_up_1)*cos(phi)
+			z_wall_up_1=initialwallz*cos(degree_up_1)*sin(phi)
+			x_wall_up_dv_1=-x_wall_up_1
+			y_wall_up_dv_1=-y_wall_up_1
+			z_wall_up_dv_1=-z_wall_up_1
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_up_dv_1  y_wall_up_dv_1  z_wall_up_dv_1 xc x_wall_up_1 yc y_wall_up_1 zc z_wall_up_1
+				table 1 degree_up_1 phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_up_2=degree_1
+			x_wall_up_2=initialwallz*sin(degree_up_2)
+			y_wall_up_2=initialwallz*cos(degree_up_2)*cos(phi)
+			z_wall_up_2=initialwallz*cos(degree_up_2)*sin(phi)
+			x_wall_up_dv_2=-x_wall_up_2
+			y_wall_up_dv_2=-y_wall_up_2
+			z_wall_up_dv_2=-z_wall_up_2
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_up_dv_2  y_wall_up_dv_2  z_wall_up_dv_2 xc x_wall_up_2 yc y_wall_up_2 zc z_wall_up_2
+				table 1 degree_up_2 phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_mid=0
+			x_wall_mid=initialwallz*sin(degree_mid)
+			y_wall_mid=initialwallz*cos(degree_mid)*cos(phi)
+			z_wall_mid=initialwallz*cos(degree_mid)*sin(phi)
+			x_wall_mid_dv=-x_wall_mid
+			y_wall_mid_dv=-y_wall_mid
+			z_wall_mid_dv=-z_wall_mid
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_mid_dv  y_wall_mid_dv  z_wall_mid_dv xc x_wall_mid yc y_wall_mid zc z_wall_mid
+				table 1 degree_mid phi
+			end_command
+			wall_id=wall_id+1
+
+			degree_down_2=-degree_1
+			x_wall_down_2=initialwallz*sin(degree_down_2)
+			y_wall_down_2=initialwallz*cos(degree_down_2)*cos(phi)
+			z_wall_down_2=initialwallz*cos(degree_down_2)*sin(phi)
+			x_wall_down_dv_2=-x_wall_down_2
+			y_wall_down_dv_2=-y_wall_down_2
+			z_wall_down_dv_2=-z_wall_down_2
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_down_dv_2  y_wall_down_dv_2 z_wall_down_dv_2 xc x_wall_down_2 yc y_wall_down_2 zc z_wall_down_2
+				table 1 degree_down_2 phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_down_1=-degree_2
+			x_wall_down_1=initialwallz*sin(degree_down_1)
+			y_wall_down_1=initialwallz*cos(degree_down_1)*cos(phi)
+			z_wall_down_1=initialwallz*cos(degree_down_1)*sin(phi)
+			x_wall_down_dv_1=-x_wall_down_1
+			y_wall_down_dv_1=-y_wall_down_1
+			z_wall_down_dv_1=-z_wall_down_1
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_down_dv_1  y_wall_down_dv_1 z_wall_down_dv_1 xc x_wall_down_1 yc y_wall_down_1 zc z_wall_down_1
+				table 1 degree_down_1 phi
+			end_command
+			wall_id=wall_id+1
+		end_if
+
+		if layer_type=3
+
+
+			; walls count from up to bottom
+
+
+			degree_up_1=degree_3
+			x_wall_up_1=initialwallz*sin(degree_up_1)
+			y_wall_up_1=initialwallz*cos(degree_up_1)*cos(phi)
+			z_wall_up_1=initialwallz*cos(degree_up_1)*sin(phi)
+			x_wall_up_dv_1=-x_wall_up_1
+			y_wall_up_dv_1=-y_wall_up_1
+			z_wall_up_dv_1=-z_wall_up_1
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_up_dv_1  y_wall_up_dv_1  z_wall_up_dv_1 xc x_wall_up_1 yc y_wall_up_1 zc z_wall_up_1
+				table 1 degree_up_1 phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_up_2=degree_2
+			x_wall_up_2=initialwallz*sin(degree_up_2)
+			y_wall_up_2=initialwallz*cos(degree_up_2)*cos(phi)
+			z_wall_up_2=initialwallz*cos(degree_up_2)*sin(phi)
+			x_wall_up_dv_2=-x_wall_up_2
+			y_wall_up_dv_2=-y_wall_up_2
+			z_wall_up_dv_2=-z_wall_up_2
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_up_dv_2  y_wall_up_dv_2  z_wall_up_dv_2 xc x_wall_up_2 yc y_wall_up_2 zc z_wall_up_2
+				table 1 degree_up_2 phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_up_3=degree_1
+			x_wall_up_3=initialwallz*sin(degree_up_3)
+			y_wall_up_3=initialwallz*cos(degree_up_3)*cos(phi)
+			z_wall_up_3=initialwallz*cos(degree_up_3)*sin(phi)
+			x_wall_up_dv_3=-x_wall_up_3
+			y_wall_up_dv_3=-y_wall_up_3
+			z_wall_up_dv_3=-z_wall_up_3
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_up_dv_3  y_wall_up_dv_3  z_wall_up_dv_3 xc x_wall_up_3 yc y_wall_up_3 zc z_wall_up_3
+				table 1 degree_up_3 phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_mid=0
+			x_wall_mid=initialwallz*sin(degree_mid)
+			y_wall_mid=initialwallz*cos(degree_mid)*cos(phi)
+			z_wall_mid=initialwallz*cos(degree_mid)*sin(phi)
+			x_wall_mid_dv=-x_wall_mid
+			y_wall_mid_dv=-y_wall_mid
+			z_wall_mid_dv=-z_wall_mid
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_mid_dv  y_wall_mid_dv  z_wall_mid_dv xc x_wall_mid yc y_wall_mid zc z_wall_mid
+				table 1 degree_mid phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_down_3=-degree_3
+			x_wall_down_3=initialwallz*sin(degree_down_3)
+			y_wall_down_3=initialwallz*cos(degree_down_3)*cos(phi)
+			z_wall_down_3=initialwallz*cos(degree_down_3)*sin(phi)
+			x_wall_down_dv_3=-x_wall_down_3
+			y_wall_down_dv_3=-y_wall_down_3
+			z_wall_down_dv_3=-z_wall_down_3
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_down_dv_3  y_wall_down_dv_3 z_wall_down_dv_3 xc x_wall_down_3 yc y_wall_down_3 zc z_wall_down_3
+				table 1 degree_down_3 phi
+			end_command
+			wall_id=wall_id+1
+
+
+
+			degree_down_2=-degree_1
+			x_wall_down_2=initialwallz*sin(degree_down_2)
+			y_wall_down_2=initialwallz*cos(degree_down_2)*cos(phi)
+			z_wall_down_2=initialwallz*cos(degree_down_2)*sin(phi)
+			x_wall_down_dv_2=-x_wall_down_2
+			y_wall_down_dv_2=-y_wall_down_2
+			z_wall_down_dv_2=-z_wall_down_2
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_down_dv_2  y_wall_down_dv_2 z_wall_down_dv_2 xc x_wall_down_2 yc y_wall_down_2 zc z_wall_down_2
+				table 1 degree_down_2 phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_down_1=-degree_2
+			x_wall_down_1=initialwallz*sin(degree_down_1)
+			y_wall_down_1=initialwallz*cos(degree_down_1)*cos(phi)
+			z_wall_down_1=initialwallz*cos(degree_down_1)*sin(phi)
+			x_wall_down_dv_1=-x_wall_down_1
+			y_wall_down_dv_1=-y_wall_down_1
+			z_wall_down_dv_1=-z_wall_down_1
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_down_dv_1  y_wall_down_dv_1 z_wall_down_dv_1 xc x_wall_down_1 yc y_wall_down_1 zc z_wall_down_1
+				table 1 degree_down_1 phi
+			end_command
+			wall_id=wall_id+1
+		end_if
+
+		if layer_type=4
+
+			
+			degree_up_0=degree_4
+			x_wall_up_0=initialwallz*sin(degree_up_0)
+			y_wall_up_0=initialwallz*cos(degree_up_0)*cos(phi)
+			z_wall_up_0=initialwallz*cos(degree_up_0)*sin(phi)
+			x_wall_up_dv_0=-x_wall_up_0
+			y_wall_up_dv_0=-y_wall_up_0
+			z_wall_up_dv_0=-z_wall_up_0
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_up_dv_0  y_wall_up_dv_0  z_wall_up_dv_0 xc x_wall_up_0 yc y_wall_up_0 zc z_wall_up_0
+				table 1 degree_up_0 phi
+			end_command
+			wall_id=wall_id+1
+
+			degree_up_1=degree_3
+			x_wall_up_1=initialwallz*sin(degree_up_1)
+			y_wall_up_1=initialwallz*cos(degree_up_1)*cos(phi)
+			z_wall_up_1=initialwallz*cos(degree_up_1)*sin(phi)
+			x_wall_up_dv_1=-x_wall_up_1
+			y_wall_up_dv_1=-y_wall_up_1
+			z_wall_up_dv_1=-z_wall_up_1
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_up_dv_1  y_wall_up_dv_1  z_wall_up_dv_1 xc x_wall_up_1 yc y_wall_up_1 zc z_wall_up_1
+				table 1 degree_up_1 phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_up_2=degree_2
+			x_wall_up_2=initialwallz*sin(degree_up_2)
+			y_wall_up_2=initialwallz*cos(degree_up_2)*cos(phi)
+			z_wall_up_2=initialwallz*cos(degree_up_2)*sin(phi)
+			x_wall_up_dv_2=-x_wall_up_2
+			y_wall_up_dv_2=-y_wall_up_2
+			z_wall_up_dv_2=-z_wall_up_2
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_up_dv_2  y_wall_up_dv_2  z_wall_up_dv_2 xc x_wall_up_2 yc y_wall_up_2 zc z_wall_up_2
+				table 1 degree_up_2 phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_up_3=degree_1
+			x_wall_up_3=initialwallz*sin(degree_up_3)
+			y_wall_up_3=initialwallz*cos(degree_up_3)*cos(phi)
+			z_wall_up_3=initialwallz*cos(degree_up_3)*sin(phi)
+			x_wall_up_dv_3=-x_wall_up_3
+			y_wall_up_dv_3=-y_wall_up_3
+			z_wall_up_dv_3=-z_wall_up_3
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_up_dv_3  y_wall_up_dv_3  z_wall_up_dv_3 xc x_wall_up_3 yc y_wall_up_3 zc z_wall_up_3
+				table 1 degree_up_3 phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_mid=0
+			x_wall_mid=initialwallz*sin(degree_mid)
+			y_wall_mid=initialwallz*cos(degree_mid)*cos(phi)
+			z_wall_mid=initialwallz*cos(degree_mid)*sin(phi)
+			x_wall_mid_dv=-x_wall_mid
+			y_wall_mid_dv=-y_wall_mid
+			z_wall_mid_dv=-z_wall_mid
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_mid_dv  y_wall_mid_dv  z_wall_mid_dv xc x_wall_mid yc y_wall_mid zc z_wall_mid
+				table 1 degree_mid phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_down_3=-degree_3
+			x_wall_down_3=initialwallz*sin(degree_down_3)
+			y_wall_down_3=initialwallz*cos(degree_down_3)*cos(phi)
+			z_wall_down_3=initialwallz*cos(degree_down_3)*sin(phi)
+			x_wall_down_dv_3=-x_wall_down_3
+			y_wall_down_dv_3=-y_wall_down_3
+			z_wall_down_dv_3=-z_wall_down_3
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_down_dv_3  y_wall_down_dv_3 z_wall_down_dv_3 xc x_wall_down_3 yc y_wall_down_3 zc z_wall_down_3
+				table 1 degree_down_3 phi
+			end_command
+			wall_id=wall_id+1
+
+
+
+			degree_down_2=-degree_1
+			x_wall_down_2=initialwallz*sin(degree_down_2)
+			y_wall_down_2=initialwallz*cos(degree_down_2)*cos(phi)
+			z_wall_down_2=initialwallz*cos(degree_down_2)*sin(phi)
+			x_wall_down_dv_2=-x_wall_down_2
+			y_wall_down_dv_2=-y_wall_down_2
+			z_wall_down_dv_2=-z_wall_down_2
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_down_dv_2  y_wall_down_dv_2 z_wall_down_dv_2 xc x_wall_down_2 yc y_wall_down_2 zc z_wall_down_2
+				table 1 degree_down_2 phi
+			end_command
+			wall_id=wall_id+1
+
+
+			degree_down_1=-degree_2
+			x_wall_down_1=initialwallz*sin(degree_down_1)
+			y_wall_down_1=initialwallz*cos(degree_down_1)*cos(phi)
+			z_wall_down_1=initialwallz*cos(degree_down_1)*sin(phi)
+			x_wall_down_dv_1=-x_wall_down_1
+			y_wall_down_dv_1=-y_wall_down_1
+			z_wall_down_dv_1=-z_wall_down_1
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_down_dv_1  y_wall_down_dv_1 z_wall_down_dv_1 xc x_wall_down_1 yc y_wall_down_1 zc z_wall_down_1
+				table 1 degree_down_1 phi
+			end_command
+			wall_id=wall_id+1
+
+			degree_down_0=-degree_4
+			x_wall_down_0=initialwallz*sin(degree_down_0)
+			y_wall_down_0=initialwallz*cos(degree_down_0)*cos(phi)
+			z_wall_down_0=initialwallz*cos(degree_down_0)*sin(phi)
+			x_wall_down_dv_0=-x_wall_down_0
+			y_wall_down_dv_0=-y_wall_down_0
+			z_wall_down_dv_0=-z_wall_down_0
+			command
+				wall id=wall_id kn=1e30 type disk rad half_shield_wall_length &
+				norm  x_wall_down_dv_0  y_wall_down_dv_0 z_wall_down_dv_0 xc x_wall_down_0 yc y_wall_down_0 zc z_wall_down_0
+				table 1 degree_down_0 phi
+			end_command
+			wall_id=wall_id+1
+
+		end_if
+
+	end_loop
+
+end
+
+;--------------------------------------------------------------------------------------------------------------------------
+def  shield_vel_define
+
+num_walls=longitude*(2*layer_type+1)
+
+loop  m (3, num_walls+2)
+	
+	shield_wall_head=find_wall(m)
+	table_entry_num=m-2
+	degree_get=xtable(1,table_entry_num)
+	phi_get=ytable(1,table_entry_num)
+
+	x_wall_get=initialwallz*sin(degree_get)
+	y_wall_get=initialwallz*cos(degree_get)*cos(phi_get)
+	z_wall_get=initialwallz*cos(degree_get)*sin(phi_get)
+
+	x_wall_dv_get=-x_wall_get
+	y_wall_dv_get=-y_wall_get
+	z_wall_dv_get=-z_wall_get
+
+	wall_dvmag= sqrt(x_wall_dv_get^2+y_wall_dv_get^2+z_wall_dv_get^2);normalize the direction vector and calculate velocity
+
+	wall_xv = x_wall_dv_get/wall_dvmag*new_shield_wall_vel
+	wall_yv = y_wall_dv_get/wall_dvmag*new_shield_wall_vel
+	wall_zv = z_wall_dv_get/wall_dvmag*new_shield_wall_vel
+
+	w_vvel(shield_wall_head,1)=wall_xv;speed of the wall
+	w_vvel(shield_wall_head,2)=wall_yv
+	w_vvel(shield_wall_head,3)=wall_zv
+
+end_loop
+end
+;--------------------------------------------------------------------------------------------------------------------------
+def shield_vel_define_5e7
+
+	new_shield_wall_vel=5e-7
+	command
+		shield_vel_define
+	end_command
+end
+;--------------------------------------------------------------------------------------------------------------------------
+def shield_vel_define_5e6
+
+	new_shield_wall_vel=5e-6
+	command
+		shield_vel_define
+	end_command
+end
+;--------------------------------------------------------------------------------------------------------------------------

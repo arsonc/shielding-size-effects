@@ -1,0 +1,111 @@
+;Units are in SI: 
+;length: mm 
+;Force: N 
+;Velocity: mm/s 
+;Mass: kg
+;Density kg/mm^3
+;Stress and pressure: MPa
+;acceleration mm/s^2 
+new
+set random
+call hcpgenwpcenter01.dat
+
+call contact_test.dat
+call difference2.dat
+call contact_test_before_shielding_crush.dat
+call wallmaker.dat
+
+
+call %fist%\2d_3d\md_setup.fis
+call %fist%\2d_3d\md.fis
+call %fist%\3d\et3.fis
+call %fist%\2d_3d\flt.fis
+call %fist%\2d_3d\fishcall.fis
+call %fist%\2d_3d\crk.fis
+
+
+def plotoff
+
+	command
+		plot ball active off
+		plot clump active off
+	end_command
+
+
+end
+
+def ploton
+
+	command
+		plot ball active on
+		plot clump active on
+		plot add ball
+		plot add wall
+	end_command
+
+
+end
+
+
+
+
+wallmaker
+
+plot create 1
+plot wall active on ball lcyan active on cforce red green active on ;cbond green
+
+plot set mag 0.85
+
+plot set center 0 0 0
+plot set rotation 0 270 0
+set dt dscale
+set plot avi size 640 480 
+
+
+;plot set mode model ; these attempt to set the view for the movie
+;plot set distance auto
+;plot set center auto
+;plot create 1 ; create a view
+
+movie avi_open file shield_sym_10_7.avi
+movie step 100 1 file shield_sym_10_7.avi
+
+hist bottomdis_5
+hist wall xforce id=1
+hist wall xforce id=2
+
+hist num_broken_bond
+hist nstep 100
+
+
+plot close
+
+crk_init
+
+property density 0.000003581 kn 1e6 ks 1e6
+
+
+property pb_n 170e3 pb_s 170e3 pb_r 1 pb_kn 3.0e8 pb_ks 1.0e8 friction 0.5
+cycle 5000
+
+set gravity -9800 0 0
+cycle 5000
+
+wall property xv  5.0e-6    yv  0.0    zv  0    range id = 1
+wall property xv -5.0e-6    yv  0.0    zv  0    range id = 2
+shield_vel_define_5e6
+contact_test
+
+
+wall property xv  5.0e-7    yv  0.0    zv  0    range id = 1
+wall property xv -5.0e-7    yv  0.0    zv  0    range id = 2
+shield_vel_define_5e7
+contact_test_before_shielding_crush
+
+difference2
+
+history write 1 2 3 4 file shield_sym_10_7.txt
+;history write 1 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 file shield14wall_rotation1_2.txt
+movie avi_close file shield_sym_10_7.avi
+
+call shield_symmetric_2

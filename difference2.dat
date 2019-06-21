@@ -1,0 +1,48 @@
+def difference2
+
+vel=1.5e-6
+topvel=-vel
+bottomvel=vel
+
+
+
+loop m (1,50000)
+	
+	command
+
+
+		Wall property xv  bottomvel    yv  0.0    zv  0.0 range id = 5
+		Wall property xv  topvel    yv  0.0    zv  0.0  range id = 6
+
+		cycle 500
+	end_command
+
+	topdis_6=topdis_6+vel*500
+	bottomdis_5=bottomdis_5+vel*500
+			
+
+			
+	command
+		wall property xv  0.0 yv  0.0    zv  0.0   range id = 5
+		wall property xv  0.0 yv  0.0    zv  0.0   range id = 6
+		solve average 0.01 maximum 0.01 step 5000
+	end_command
+
+
+	contact_numwp=contact_head
+	num_broken_bond=0
+	loop while contact_numwp # null
+		pbp_wp=c_pb(contact_numwp)
+		if pbp_wp # null
+			num_broken_bond=num_broken_bond + 1
+		end_if
+		contact_numwp=c_next(contact_numwp)
+	end_loop
+
+
+	if bottomdis_5>0.20
+		exit
+	endif
+
+end_loop
+end

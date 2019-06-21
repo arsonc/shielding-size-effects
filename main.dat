@@ -1,0 +1,116 @@
+;Units are in SI: 
+;length: mm 
+;Force: N 
+;Velocity: mm/s 
+;Mass: kg
+;Density kg/mm^3
+;Stress and pressure: MPa
+;acceleration mm/s^2 
+new
+set random
+call hcpgenwpcenter01.dat
+
+call contact_test.dat
+call difference2.dat
+
+
+def wallmaker
+	r=2.4
+	wall_radius = r/2
+	position1=r/2.0
+	position2=-r/2.0
+	initialwallz=1.05*2.4;
+	w6z = initialwallz
+	w5z = -initialwallz
+	command
+		wall id=5 kn=1e30 type disk rad wall_radius norm  1  0  0 xc w5z yc 0 zc 0            ; The bottom wall
+		wall id=6 kn=1e30 type disk rad wall_radius norm -1  0  0 xc w6z yc 0 zc 0            ; top wall
+	end_command
+
+end
+
+
+
+def plotoff
+
+	command
+		plot ball active off
+		plot clump active off
+	end_command
+
+
+end
+
+def ploton
+
+	command
+		plot ball active on
+		plot clump active on
+		plot add ball
+		plot add wall
+	end_command
+
+
+end
+
+
+wallmaker
+
+plot create 1
+plot wall active on ball lcyan active on cforce red green active on;cbond green
+
+
+plot set mag 1
+
+plot set center 0 0 0
+plot set rotation 0 270 0
+set dt dscale
+set plot avi size 640 480 ;set to avi, specify size
+
+movie avi_open file sample_rotation_3.0x_radius.avi
+movie step 600 1 file sample_rotation_3.0x_radius.avi
+
+hist wall xforce id=5
+hist wall xforce id=6
+hist bottomdis_5
+hist topdis_6
+hist nstep 600
+
+plot close
+
+
+property density 0.000003581 kn 1.0e6 ks 1.0e6
+;wall id =5 xspin 0 yspin 1.570796327e-4 zspin 0 x=0 y=0 z=0
+;wall id =6 xspin 0 yspin 1.570796327e-4 zspin 0 x=0 y=0 z=0
+cycle 10000
+wall id =5 xspin 0 yspin 0 zspin 0
+wall id =6 xspin 0 yspin 0 zspin 0
+
+
+
+
+
+
+property pb_n 170e3 pb_s 170e3 pb_r 1 pb_kn 3.0e8 pb_ks 1.0e8 friction 0.5
+cycle 5000
+
+set gravity 0 -9800 0
+cycle 5000
+
+
+Wall property xv  5.0e-6 range id = 5 ;both changed from .0001
+Wall property xv -5.0e-6 range id = 6 ;ratio of radius to velocity should be 50000
+
+
+contact_test
+
+difference2
+
+
+
+history write 1 2 3 4 file sample_rotation_3.0x_radius.txt
+
+movie avi_close file sample_rotation_3.0x_radius.avi
+history limits
+
+call main_2.dat

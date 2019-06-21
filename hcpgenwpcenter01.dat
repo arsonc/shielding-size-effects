@@ -1,0 +1,74 @@
+
+def hcpgenwpcenter01;generating hcppacking
+
+xc=0.0
+yc=0.0
+zc=0.0  ;the starting position of the packing
+rc=0.032;radius, 0.8(radius of cluster)*3/(29*sqrt(6)*2/3+2)=0.03322743
+		
+rcluster=2.40  ; the cluster now has the radius of 0.8mm.
+size=105 ;the size of hcp
+rc2=2.0*rc 
+idn=1
+
+yinc=sqrt(3)*rc ;the offset of adjacent cows
+zinc=sqrt(6)*rc2/3.0  ;The distance between sphere centers, projected on the z direction. 
+;from wiki close packing
+
+xboundary=size*rc2  ;define the boundary to delete balls that are not in the cluster
+yboundary=(size-1)*yinc+rc2
+zboundary=(size-1)*zinc+rc2
+;outliner=zboundary/2.5 ;the radius of the cluster(not diameter!)  ;2.1 is a factor of safety
+
+loop layer(1,size) ;cycle all the layers
+    zc=(layer-1)*zinc+rc-zboundary/2 ;the z direction, up is positive
+    remainder=layer-int(layer/2)*2
+    
+if remainder=1  then ;first kind layer
+	loop row1(1,size)  ;cycle all the rows
+         remainder2=row1-int(row1/2)*2
+         if remainder2=1 then
+		xc=rc-xboundary/2;
+         else
+        	xc=0.0-xboundary/2;
+         endif
+         yc=(row1-1)*yinc+rc-yboundary/2
+		loop line(1,size)
+			centerdis=sqrt((xc)^2+(yc)^2+(zc)^2) ;distance between the center of the cluster
+			
+		if centerdis<rcluster  
+           		command
+				;generate x xc xc y yc yc z zc zc radius rcb rcb id idn idn
+				;don’t use generate, use ball function!!
+				ball radius rc x xc y yc z zc id idn
+           		end_command
+			idn = idn + 1
+		endif
+		xc=xc+rc2
+		end_loop
+	end_loop
+else   ;second kind of layer
+	loop row2(1,size)
+	remainder3=row2-int(row2/2)*2
+	if remainder3=1
+		xc=rc-xboundary/2;
+	else
+		xc=0.0-xboundary/2;
+	endif
+          yc=2*sqrt(3)/3*rc+rc+(row2-1)*yinc-yboundary/2;need check!
+          loop line2(1,size)
+		centerdis2=sqrt((xc)^2+(yc)^2+(zc)^2) ;
+               if centerdis2<rcluster
+           		command
+				ball radius rc x xc y yc z zc id idn
+           		end_command
+			idn = idn + 1
+		endif
+		xc=xc+rc2;
+          end_loop
+      end_loop
+    endif
+end_loop
+end
+
+hcpgenwpcenter01
